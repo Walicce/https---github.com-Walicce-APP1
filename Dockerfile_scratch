@@ -1,0 +1,16 @@
+FROM scratch AS builder
+ADD alpine-minirootfs-3.17.3-aarch64.tar.gz / 
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache nodejs=18.14.2-r0 \
+                        npm=9.1.2-r0 && \
+        rm -rf /etc/apk/cache
+
+ARG VERSION
+ENV APP_VERSION=$VERSION
+WORKDIR /usr/app
+COPY ./package.json ./ 
+RUN npm install 
+COPY ./index.js ./
+EXPOSE 8080 
+CMD ["npm","start"] 
